@@ -608,12 +608,30 @@ def get_transport_options():
         from_city = request.args.get('from')
         to_city = request.args.get('to')
         date = request.args.get('date')
+        types = request.args.get('types', '').split(',')
         
         if not all([from_city, to_city, date]):
             return jsonify({"error": "Missing required parameters"}), 400
             
-        # Always return static options
+        # Get static options
         static_options = getStaticTransportOptions(from_city, to_city)
+        
+        # Map frontend transport types to backend types
+        type_mapping = {
+            'Train': 'train',
+            'Bus': 'bus',
+            'Plane': 'air'
+        }
+        
+        # Filter options based on requested types
+        if types and types[0]:  # Check if types is not empty
+            filtered_options = {}
+            for frontend_type in types:
+                backend_type = type_mapping.get(frontend_type)
+                if backend_type and backend_type in static_options:
+                    filtered_options[frontend_type] = static_options[backend_type]
+            return jsonify(filtered_options)
+        
         return jsonify(static_options)
         
     except Exception as e:

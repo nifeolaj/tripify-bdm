@@ -1165,13 +1165,6 @@
                 </div>
             </div>
 
-            <div class="selected-options">
-                <h5>Selected Preferences:</h5>
-                <div id="selected-interests"></div>
-                <div id="selected-transport"></div>
-                <div id="selected-accommodation"></div>
-            </div>
-
             <div class="section-header">
                 <h2>Your Preferences</h2>
                 <button class="filter-button" onclick="togglePreferences()">
@@ -1636,9 +1629,14 @@
             if (!transportSection) return;
 
             const destinations = JSON.parse(localStorage.getItem('destinations')) || [];
+            const preferences = JSON.parse(localStorage.getItem('preferences')) || {};
+            const transportTypes = preferences.transport || [];
+            
             if (destinations.length < 2) return;
 
-            let html = '';
+            // Clear existing content
+            transportSection.innerHTML = '';
+
             for (let i = 0; i < destinations.length - 1; i++) {
                 const fromCity = destinations[i];
                 const toCity = destinations[i + 1];
@@ -1658,13 +1656,34 @@
                 transportSection.appendChild(transportOptions);
                 
                 // Fetch transport options from the backend
-                fetch(`/api/v1/transport-options?from=${fromCity}&to=${toCity}&date=${new Date().toISOString()}`)
+                fetch(`/api/v1/transport-options?from=${fromCity}&to=${toCity}&date=${new Date().toISOString()}&types=${transportTypes.join(',')}`)
                     .then(response => response.json())
                     .then(data => {
+                        // Filter options based on user preferences
+                        const filteredData = Object.entries(data).reduce((acc, [type, options]) => {
+                            if (transportTypes.includes(type)) {
+                                acc[type] = options;
+                            }
+                            return acc;
+                        }, {});
+
+                        if (Object.keys(filteredData).length === 0) {
+                            transportOptions.innerHTML = `
+                                <h4>${fromCity} → ${toCity}</h4>
+                                <div class="transport-options">
+                                    <div class="error-state">
+                                        <i class="fas fa-exclamation-circle"></i>
+                                        <p>No transport options available for selected preferences</p>
+                                    </div>
+                                </div>
+                            `;
+                            return;
+                        }
+
                         transportOptions.innerHTML = `
                             <h4>${fromCity} → ${toCity}</h4>
                             <div class="transport-options">
-                                ${Object.entries(data).map(([type, options]) => 
+                                ${Object.entries(filteredData).map(([type, options]) => 
                                     options.map(option => `
                                         <div class="transport-card option-card" data-price="${option.price}">
                                             <img src="${option.image}" alt="${option.provider}" class="transport-image">
@@ -1703,10 +1722,31 @@
                         setTimeout(() => {
                             // Load static options
                             const staticData = getStaticTransportOptions(fromCity, toCity);
+                            // Filter static data based on preferences
+                            const filteredStaticData = Object.entries(staticData).reduce((acc, [type, options]) => {
+                                if (transportTypes.includes(type)) {
+                                    acc[type] = options;
+                                }
+                                return acc;
+                            }, {});
+
+                            if (Object.keys(filteredStaticData).length === 0) {
+                                transportOptions.innerHTML = `
+                                    <h4>${fromCity} → ${toCity}</h4>
+                                    <div class="transport-options">
+                                        <div class="error-state">
+                                            <i class="fas fa-exclamation-circle"></i>
+                                            <p>No transport options available for selected preferences</p>
+                                        </div>
+                                    </div>
+                                `;
+                                return;
+                            }
+
                             transportOptions.innerHTML = `
                                 <h4>${fromCity} → ${toCity}</h4>
                                 <div class="transport-options">
-                                    ${Object.entries(staticData).map(([type, options]) => 
+                                    ${Object.entries(filteredStaticData).map(([type, options]) => 
                                         options.map(option => `
                                             <div class="transport-card option-card" data-price="${option.price}">
                                                 <img src="${option.image}" alt="${option.provider}" class="transport-image">
