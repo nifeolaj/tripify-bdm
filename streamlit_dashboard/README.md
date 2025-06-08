@@ -1,6 +1,6 @@
 # Streamlit Replication Steps
 
-If you want to see the web app, go to https://tripify-dashboard.streamlit.app/
+To explore the web application, visit: https://tripify-dashboard.streamlit.app/
 
 ## To run locally,
 
