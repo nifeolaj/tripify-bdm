@@ -644,6 +644,7 @@ def get_accommodation_options():
     try:
         city = request.args.get('city')
         date = request.args.get('date')
+        types = request.args.get('types', '').split(',')
         
         if not all([city, date]):
             return jsonify({"error": "Missing required parameters"}), 400
@@ -673,8 +674,37 @@ def get_accommodation_options():
                 'type': 'Apartment',
                 'image': 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=500&h=300&fit=crop',
                 'amenities': ['Free WiFi', 'Kitchen', 'Washing Machine', 'Balcony']
+            },
+            {
+                'name': 'Business Hotel',
+                'price': 100,
+                'rating': 4.2,
+                'type': 'Hotel',
+                'image': 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=500&h=300&fit=crop',
+                'amenities': ['Free WiFi', 'Business Center', 'Restaurant', 'Gym']
+            },
+            {
+                'name': 'Backpacker Hostel',
+                'price': 25,
+                'rating': 3.8,
+                'type': 'Hostel',
+                'image': 'https://images.unsplash.com/photo-1555854877-bab0e564b8d5?w=500&h=300&fit=crop',
+                'amenities': ['Free WiFi', 'Lockers', 'Common Room', 'Laundry']
+            },
+            {
+                'name': 'Studio Apartment',
+                'price': 80,
+                'rating': 4.3,
+                'type': 'Apartment',
+                'image': 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=500&h=300&fit=crop',
+                'amenities': ['Free WiFi', 'Kitchen', 'Washing Machine']
             }
         ]
+        
+        # Filter options based on requested types
+        if types and types[0]:  # Check if types is not empty
+            filtered_options = [option for option in static_options if option['type'] in types]
+            return jsonify(filtered_options)
         
         return jsonify(static_options)
         

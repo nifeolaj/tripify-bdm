@@ -1829,6 +1829,9 @@
             if (!accommodationSection) return;
 
             const destinations = JSON.parse(localStorage.getItem('destinations')) || [];
+            const preferences = JSON.parse(localStorage.getItem('preferences')) || {};
+            const accommodationTypes = preferences.accommodation || [];
+            
             if (destinations.length < 2) return;
 
             // Clear existing content
@@ -1852,9 +1855,22 @@
                 accommodationSection.appendChild(accommodationOptions);
                 
                 // Fetch accommodation options from the backend
-                fetch(`/api/v1/accommodation-options?city=${city}&date=${new Date().toISOString()}`)
+                fetch(`/api/v1/accommodation-options?city=${city}&date=${new Date().toISOString()}&types=${accommodationTypes.join(',')}`)
                     .then(response => response.json())
                     .then(data => {
+                        if (data.length === 0) {
+                            accommodationOptions.innerHTML = `
+                                <h4>${city}</h4>
+                                <div class="accommodation-options">
+                                    <div class="error-state">
+                                        <i class="fas fa-exclamation-circle"></i>
+                                        <p>No accommodation options available for selected preferences</p>
+                                    </div>
+                                </div>
+                            `;
+                            return;
+                        }
+
                         accommodationOptions.innerHTML = `
                             <h4>${city}</h4>
                             <div class="accommodation-options">
