@@ -49,6 +49,7 @@ Generate API Keys for
 - `Flixbus`
 
 Run the `kafka consumer`using the `kafka_consumer.py` script for separate topics
+Run `BusFareStreamsApp.java` script for preprocessing the fares generated through producer.
 
 
 Run the following Airflow DAGs to extract the data from external sources and load the raw data into the **temporal landing zone**:
