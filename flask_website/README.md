@@ -57,3 +57,5 @@ python app.py
 Step 6: Open Web App
 
 The web app should be served at localhost:5001 unless stated otherwise.
+
+NOTE that this will also require access to serverless instances of MongoDB, Pinecone, Neo4J as well as a running Kafka to work properly, although there are fallback mechanisms in place just in case those don't work.
