@@ -1126,6 +1126,14 @@
             font-size: 12px;
             color: #666;
         }
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes slideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
     </style>
 </head>
 <body>
@@ -1613,8 +1621,24 @@
             // Save to localStorage
             localStorage.setItem('preferences', JSON.stringify(preferences));
 
-            // Update display
-            updateSelectedOptionsDisplay(preferences);
+            // Update the preferences display in trip info
+            const preferencesHTML = `
+                <div class="info-card">
+                    <h3>Preferences</h3>
+                    ${preferences.interests?.length ? `<p>Interests: ${preferences.interests.join(', ')}</p>` : ''}
+                    ${preferences.transport?.length ? `<p>Transport: ${preferences.transport.join(', ')}</p>` : ''}
+                    ${preferences.accommodation?.length ? `<p>Accommodation: ${preferences.accommodation.join(', ')}</p>` : ''}
+                </div>
+            `;
+
+            // Find and update the preferences card in trip info
+            const tripInfo = document.querySelector('.trip-info');
+            const existingPreferencesCard = tripInfo.querySelector('.info-card:nth-child(3)');
+            if (existingPreferencesCard) {
+                existingPreferencesCard.outerHTML = preferencesHTML;
+            } else {
+                tripInfo.insertAdjacentHTML('beforeend', preferencesHTML);
+            }
 
             // Update transport and accommodation options based on new preferences
             populateTransportOptions();
@@ -1622,6 +1646,33 @@
 
             // Hide preferences filter
             document.getElementById('preferences-filter').style.display = 'none';
+
+            // Show a success message
+            const successMessage = document.createElement('div');
+            successMessage.className = 'success-message';
+            successMessage.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #28a745;
+                color: white;
+                padding: 15px 25px;
+                border-radius: 8px;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                z-index: 1000;
+                animation: slideIn 0.3s ease-out;
+            `;
+            successMessage.innerHTML = `
+                <i class="fas fa-check-circle"></i>
+                Preferences saved successfully!
+            `;
+            document.body.appendChild(successMessage);
+
+            // Remove the success message after 3 seconds
+            setTimeout(() => {
+                successMessage.style.animation = 'slideOut 0.3s ease-out';
+                setTimeout(() => successMessage.remove(), 300);
+            }, 3000);
         }
 
         function populateTransportOptions() {
