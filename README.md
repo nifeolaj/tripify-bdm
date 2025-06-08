@@ -18,7 +18,7 @@ Run the Docker Container:
 ```
 docker run -d -p 9092:9092 --name broker apache/kafka:latest
 ```
-Create three topics in kafka - `airfare` , `trainfare` and `busfare` using the given code just change the topic name
+Create three topics in kafka - `airfare` , `trainfare`, `busfare` , `airfare_cleaned`, `trainfare_cleaned` and `busfare_cleaned` using the given code just change the topic name
 ```
 docker exec -it broker opt/kafka/bin/kafka-topics.sh \
 --bootstrap-server localhost:9092 \
@@ -42,11 +42,14 @@ To connect with Google Cloud services from your local machine:
 ```
 Generate API Keys for
 - `Google Gemini API`
+- `Pincone`
+- `MongoDB`
 - `Serpe API`
 - `BlaBlaCar`
 - `Flixbus`
 
 Run the `kafka consumer`using the `kafka_consumer.py` script for separate topics
+
 
 Run the following Airflow DAGs to extract the data from external sources and load the raw data into the **temporal landing zone**:
 - `events_api_dag`
