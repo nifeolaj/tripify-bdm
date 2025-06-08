@@ -50,6 +50,7 @@ Generate API Keys for
 
 Run the `kafka consumer`using the `kafka_consumer.py` script for separate topics
 Run `BusFareStreamsApp.java` script for preprocessing the fares generated through producer.
+Run `flask_website/app.py` to start the app locally.
 
 
 Run the following Airflow DAGs to extract the data from external sources and load the raw data into the **temporal landing zone**:
