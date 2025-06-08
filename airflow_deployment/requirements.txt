@@ -1,0 +1,11 @@
+duckdb
+google-cloud-firestore
+pyspark
+faker
+pinecone
+pymongo
+pinecone[grpc]
+apache-airflow-providers-apache-spark
+apache-airflow-providers-databricks
+sentence-transformers
+google-generativeai
